@@ -39,7 +39,8 @@ export default class AppointmentForm extends React.Component {
       $.ajax({
         type: "GET",
         url: `http://localhost:3001/appointments/${this.props.match.params.id}`,
-        dataType: "JSON"
+        dataType: "JSON",
+        headers: JSON.parse(sessionStorage.getItem('user'))
       }).done((data) => {
         this.setState({
                         title: {value: data.title, valid: true},
@@ -100,7 +101,8 @@ export default class AppointmentForm extends React.Component {
     $.ajax({
       type: "PATCH",
       url: `http://localhost:3001/appointments/${this.props.match.params.id}`,
-      data: {appointment: appointment}
+      data: {appointment: appointment},
+      headers: JSON.parse(sessionStorage.getItem('user'))
     })
     .done((data) => {
       console.log('appointment updated!');
@@ -115,24 +117,29 @@ export default class AppointmentForm extends React.Component {
   addAppointment () {
     const appointment = {title: this.state.title.value,
                          appt_time: this.state.appt_time.value};
-    $.post('http://localhost:3001/appointments',
-            {appointment: appointment})
-          .done((data) => {
-            this.props.handleNewAppointment(data);
-            this.resetFormErrors();
-            console.log(data);
-          })
-          .fail((response) => {
-            this.setState({formErrors: response.responseJSON,
-                            formValid: false});
-          });
+    $.ajax({
+      type: 'POST',
+      url: 'http://localhost:3001/appointments',
+      data: {appointment: appointment},
+      headers: JSON.parse(sessionStorage.getItem('user'))
+    })
+    .done((data) => {
+      this.props.handleNewAppointment(data);
+      this.resetFormErrors();
+      console.log(data);
+    })
+    .fail((response) => {
+      this.setState({formErrors: response.responseJSON,
+                      formValid: false});
+    });
   }
 
   deleteAppointment = () => {
     //if(confirm("Are you sure you want to delete this appointment?")) {
       $.ajax({
         type: "DELETE",
-        url: `http://localhost:3001/appointments/${this.props.match.params.id}`
+        url: `http://localhost:3001/appointments/${this.props.match.params.id}`,
+        headers: JSON.parse(sessionStorage.getItem('user'))
       })
       .done((data) => {
         this.props.history.push('/');

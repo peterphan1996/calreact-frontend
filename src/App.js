@@ -3,7 +3,6 @@ import logo from './logo.svg';
 import $ from 'jquery';
 import './App.css';
 
-
 class App extends Component {
   constructor (props) {
     super(props);
